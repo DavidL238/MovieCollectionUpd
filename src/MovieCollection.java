@@ -150,17 +150,6 @@ public class MovieCollection
       listToSort.set(possibleIndex, temp);
     }
   }
-
-  private void sortStrings(ArrayList<String> a) {
-    String s;
-    for (int i = 0; i < a.size() - 1; i++) {
-      while (a.get(i).compareTo(a.get(i+1)) > 0) {
-        s = a.get(i);
-        a.set(i, a.get(i+1));
-        a.set(i+1, s);
-      }
-    }
-  }
   
   private void displayMovieInfo(Movie movie)
   {
@@ -207,30 +196,11 @@ public class MovieCollection
               }
             }
           }
-
-
-        /*
-        for (String actors : actorList) {
-          if (actors.equalsIgnoreCase(autoName)) {
-            boolean add = true;
-            for (String castMember : castMembers) {
-              if (castMember.equals(actors)) {
-                add = false;
-                break;
-              }
-            }
-            if (add) {
-              castMembers.add(actors);
-            }
-          }
-
-
-        } */
       }
     }
 
     sortResults(moviesWithWord);
-    sortStrings(castMembers);
+    sortStrings(castMembers); // Implementation in next method
 
     for (int i = 0; i < castMembers.size(); i++) {
       int order = i + 1;
@@ -246,9 +216,9 @@ public class MovieCollection
     String selected = castMembers.get(choice - 1);
     ArrayList<Movie> list = new ArrayList<Movie>();
 
-    for (int i = 0; i < moviesWithWord.size(); i++) {
-      if (moviesWithWord.get(i).getCast().contains(selected)) {
-        list.add(moviesWithWord.get(i));
+    for (Movie movie : moviesWithWord) {
+      if (movie.getCast().contains(selected)) {
+        list.add(movie);
       }
     }
 
@@ -268,6 +238,20 @@ public class MovieCollection
 
     System.out.println("\n ** Press Enter to Return to Main Menu **");
     scanner.nextLine();
+  }
+
+  private void sortStrings(ArrayList<String> a) {
+    String s;
+    for (int i = 0; i < a.size() - 1; i++) {
+      while (a.get(i).compareTo(a.get(i+1)) > 0) {
+        s = a.get(i);
+        a.set(i, a.get(i+1));
+        a.set(i+1, s);
+        if (i > 0) {
+          i--;
+        }
+      }
+    }
   }
 
   private void searchKeywords()
@@ -304,12 +288,95 @@ public class MovieCollection
   
   private void listGenres()
   {
-  
+    ArrayList<String> genre = new ArrayList<>();
+    for (Movie movie : movies) {
+      boolean addGenre = true;
+      String[] genres = movie.getGenres().split("\\|");
+      for (String genreList : genres) {
+        for (String allGenres : genre) {
+          if (genreList.equals(allGenres)) {
+            addGenre = false;
+            break;
+          }
+        }
+        if (addGenre) {
+          genre.add(genreList);
+        }
+        addGenre = true;
+      }
+    }
+    sortStrings(genre);
+    for (int i = 0; i < genre.size(); i++) {
+      int order = i + 1;
+      System.out.println(order + ". " + genre.get(i));
+    }
+    System.out.println("Type the number that corresponds to the genre: ");
+    int choice = scanner.nextInt();
+    scanner.nextLine();
+    String selectedGenre = genre.get(choice-1);
+    ArrayList<Movie> moviesWithGenre = new ArrayList<Movie>();
+    for (Movie movie : movies) {
+      if (movie.getGenres().contains(selectedGenre)) {
+        moviesWithGenre.add(movie);
+      }
+    }
+
+    sortResults(moviesWithGenre);
+    int count = 1;
+    for (Movie moviesList : moviesWithGenre) {
+      System.out.println(count + ". " + moviesList);
+      count++;
+    }
+    System.out.println("Which movie would you like to learn more about?");
+    System.out.print("Enter number: ");
+
+    choice = scanner.nextInt();
+    scanner.nextLine();
+
+    Movie selectedMovie = moviesWithGenre.get(choice - 1);
+
+    displayMovieInfo(selectedMovie);
+
+    System.out.println("\n ** Press Enter to Return to Main Menu **");
+    scanner.nextLine();
   }
   
   private void listHighestRated()
   {
-  
+    ArrayList<Movie> allMovies = new ArrayList<>();
+    for (Movie movie : movies) {
+      allMovies.add(movie);
+    }
+    ArrayList<Movie> highestRated = new ArrayList<>();
+    for (int i = 0; i < 50; i++) {
+      double highestValue = allMovies.get(0).getUserRating();
+      int indexOf = 0;
+      for (int p = 0; p < allMovies.size(); p++) {
+        if (allMovies.get(p).getUserRating() > highestValue) {
+          highestValue = allMovies.get(p).getUserRating();
+          indexOf = p;
+        }
+      }
+      highestRated.add(allMovies.remove(indexOf));
+    }
+
+    int count = 1;
+    for (Movie moviesList : highestRated) {
+      System.out.println(count + ". " + moviesList);
+      count++;
+    }
+    System.out.println("Which movie would you like to learn more about?");
+    System.out.print("Enter number: ");
+
+    int choice = scanner.nextInt();
+    scanner.nextLine();
+
+    Movie selectedMovie = highestRated.get(choice - 1);
+
+    displayMovieInfo(selectedMovie);
+
+    System.out.println("\n ** Press Enter to Return to Main Menu **");
+    scanner.nextLine();
   }
   
   private void listHighestRevenue()
