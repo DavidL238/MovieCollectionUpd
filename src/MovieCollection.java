@@ -362,7 +362,7 @@ public class MovieCollection
 
     int count = 1;
     for (Movie moviesList : highestRated) {
-      System.out.println(count + ". " + moviesList);
+      System.out.println(count + ". " + moviesList.getTitle() + " (User Rating: " + moviesList.getUserRating() + ")");
       count++;
     }
     System.out.println("Which movie would you like to learn more about?");
@@ -381,7 +381,37 @@ public class MovieCollection
   
   private void listHighestRevenue()
   {
-  
+    ArrayList<Movie> allMovies = new ArrayList<>(movies);
+    ArrayList<Movie> highestRevenue = new ArrayList<>();
+    for (int i = 0; i < 50; i++) {
+      double highestValue = allMovies.get(0).getRevenue();
+      int indexOf = 0;
+      for (int p = 0; p < allMovies.size(); p++) {
+        if (allMovies.get(p).getRevenue() > highestValue) {
+          highestValue = allMovies.get(p).getRevenue();
+          indexOf = p;
+        }
+      }
+      highestRevenue.add(allMovies.remove(indexOf));
+    }
+
+    int count = 1;
+    for (Movie moviesList : highestRevenue) {
+      System.out.println(count + ". " + moviesList.getTitle() + " (Box Revenue: " + moviesList.getRevenue() + ")");
+      count++;
+    }
+    System.out.println("Which movie would you like to learn more about?");
+    System.out.print("Enter number: ");
+
+    int choice = scanner.nextInt();
+    scanner.nextLine();
+
+    Movie selectedMovie = highestRevenue.get(choice - 1);
+
+    displayMovieInfo(selectedMovie);
+
+    System.out.println("\n ** Press Enter to Return to Main Menu **");
+    scanner.nextLine();
   }
   
   private void importMovieList(String fileName)
